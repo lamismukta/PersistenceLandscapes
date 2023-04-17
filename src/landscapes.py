@@ -54,7 +54,8 @@ def persistence_landscape(barcode): #input: a list of 2-tuples. be careful if np
         PL.append(L)
     return PL
 
-def pl_plot(pl, xl = 2, xu = 12, yl = 0, yu = 4):
+# formerly pl_plot
+def plot_pl(pl, xl = 2, xu = 12, yl = 0, yu = 4):
     for item in pl:
         x = [i[0] for i in item]
         y = [i[1] for i in item]
@@ -65,7 +66,9 @@ def pl_plot(pl, xl = 2, xu = 12, yl = 0, yu = 4):
         plt.gca().set_aspect('equal', adjustable='box')
     plt.show()
 
-def make_X(a,b): #make list of all x coords in each PL degree for two lists of PL diagrams, without repetition 
+# make list of all x coords in each PL degree for two lists of PL diagrams, without repetition 
+# formerly make_X
+def common_x(a,b): 
     x_a = [[i[0] for i in item[1:-1]] for item in a] #remove inf for sorting but add back later
     x_b = [[i[0] for i in item[1:-1]] for item in b]
     n = min(len(a),len(b))
@@ -80,8 +83,10 @@ def make_X(a,b): #make list of all x coords in each PL degree for two lists of P
         X[i].append(math.inf)
     return X
 
-def pl2func(pl):
-    x = [[k[0] for k in item] for item in pl] #turn the persistence landscape a into an interpolated function
+# turn the persistence landscape a into an interpolated function
+# formerly pl2func
+def pl_to_function(pl):
+    x = [[k[0] for k in item] for item in pl] 
     y = [[k[1] for k in item] for item in pl]
     L = []
     for i in range(len(pl)):
@@ -89,15 +94,17 @@ def pl2func(pl):
         L.append(l)
     return L
 
-def avg_2pl(pl1,pl2): #take as input 2 persistence landscapes
+
+# formerly avg_2pl
+def average_pair(pl1,pl2): #take as input 2 persistence landscapes
     a=pl1
     b=pl2
-    X = make_X(a,b)
+    X = common_x(a,b)
     n = min(len(a),len(b))
     N = max(len(a),len(b))
     
-    L_a = pl2func(a)
-    L_b = pl2func(b)
+    L_a = pl_to_function(a)
+    L_b = pl_to_function(b)
   
     Y_a = [] #values a takes on all of X- needed the interpolated functions to find these
     for i in range(len(a)):
@@ -127,24 +134,25 @@ def avg_2pl(pl1,pl2): #take as input 2 persistence landscapes
     
     return avg_pl   
 
-def avg_pl(lst_pl): #input a list of persistence landscapes
+# formerly avg_pl
+def average_list(lst_pl): #input a list of persistence landscapes
     old_l = lst_pl
     while len(old_l)>1:
         n = len(old_l)
         new_l = []
         if n % 2 == 0:
             for i in range(int(n/2)):
-                new_l.append(avg_2pl(old_l[2*i],old_l[2*i+1]))
+                new_l.append(average_pair(old_l[2*i],old_l[2*i+1]))
         else:
             for i in range(int((n-1)/2)):
-                new_l.append(avg_2pl(old_l[2*i],old_l[2*i+1]))
+                new_l.append(average_pair(old_l[2*i],old_l[2*i+1]))
             new_l.insert(int((n-1)/2),old_l[-1])
         old_l = new_l
     return old_l[0]    
 
-def pw_int_pl(pl,k): #integrates kth func in the persistence landscape
+def classic_integration(pl,k): #integrates kth func in the persistence landscape
     x_vals = [[i[0] for i in item] for item in pl]
-    L_a = pl2func(pl)
+    L_a = pl_to_function(pl)
     result = 0
     for i in range(len(x_vals[k])-1):
         (x,y) = (x_vals[k][i],x_vals[k][i+1])
@@ -153,9 +161,10 @@ def pw_int_pl(pl,k): #integrates kth func in the persistence landscape
     return result
 
 # trapezium integration
-def tp_int_pl(pl,k): #integrates kth func in the persistence landscape
+# formerly tp_int_pl
+def trapezium_integrate(pl,k): #integrates kth func in the persistence landscape
     x_vals = [[i[0] for i in item][1:-1] for item in pl] #get rid of infinities
-    L_a = pl2func(pl)
+    L_a = pl_to_function(pl)
     result = 0
     for i in range(len(x_vals[k])-1): #need to get rid of the infinities
         (x,y) = (x_vals[k][i],x_vals[k][i+1])
@@ -166,9 +175,9 @@ def tp_int_pl(pl,k): #integrates kth func in the persistence landscape
 def add_pl(pl1,pl2): #only adds in the dimensions that both have persistence landscapes
         a=pl1
         b=pl2
-        X = make_X(a,b)
-        L_a = pl2func(a)
-        L_b = pl2func(b)
+        X = common_x(a,b)
+        L_a = pl_to_function(a)
+        L_b = pl_to_function(b)
 
         Y_a = [] #values a takes on all of X- needed the interpolated functions to find these
         for i in range(len(a)):
@@ -193,7 +202,9 @@ def add_pl(pl1,pl2): #only adds in the dimensions that both have persistence lan
         
         return sm   
 
-def n_avg(lst_pl):
+
+# formerly n_avg
+def average_n(lst_pl):
     sm = lst_pl[0]
     for i in range(len(lst_pl)-1):
         sm = add_pl(sm,lst_pl[i+1])
@@ -206,10 +217,10 @@ def L_inf(p1,p2): #given two persistence landscapes returns a distance
     b = p2
     n = min(len(a),len(b))
 
-    X = make_X(a,b) #make list of points X union of x coords of critical pts in both 
+    X = common_x(a,b) #make list of points X union of x coords of critical pts in both 
     
-    L_a = pl2func(a)
-    L_b = pl2func(b)
+    L_a = pl_to_function(a)
+    L_b = pl_to_function(b)
         
     Y_a = [] #Y values a takes on all of X, but only up to min length 
     for i in range(n):
@@ -234,9 +245,9 @@ def Lp(pl1,pl2,p):
     a=pl1
     b=pl2
     n = min(len(a),len(b))
-    X = make_X(a,b)
-    L_a = pl2func(a)
-    L_b = pl2func(b)
+    X = common_x(a,b)
+    L_a = pl_to_function(a)
+    L_b = pl_to_function(b)
     
     Y_a = [] #Y values a takes on all of X
     for i in range(len(a)):
@@ -256,17 +267,19 @@ def Lp(pl1,pl2,p):
     for i in range(n):
         pair = list(zip(X[i],Y_diff_abs[i]))
         diff_pl.append(pair)
-    diff_func = pl2func(diff_pl) #turn it into a function (actually it is a list of functions) dont need this yet
+    diff_func = pl_to_function(diff_pl) #turn it into a function (actually it is a list of functions) dont need this yet
     
     sum_int = 0
     for i in range(len(diff_pl)):
-        j = tp_int_pl(diff_pl,i) #use my piecewise trapezium integration function
+        j = trapezium_integrate(diff_pl,i) #use my piecewise trapezium integration function
         sum_int += j
         
     final = (sum_int)**(1/p)
     return final   
 
-def dm_lp(pls,p):  
+
+# formerly dm_lp
+def lp_distance_matrix(pls,p):  
     all_distances = np.zeros((len(pls), len(pls)))
     for i in range(0, len(pls)):
         for j in range(i, len(pls)):
@@ -276,7 +289,9 @@ def dm_lp(pls,p):
             all_distances[i,j] = all_distances[j,i]
     return(all_distances)
 
-def dm_linf(pls):    
+
+# formerly dm_linf
+def linf_diatance_matrix(pls):    
     all_distances = np.zeros((len(pls), len(pls)))
     for i in range(0, len(pls)):
         for j in range(i, len(pls)):
