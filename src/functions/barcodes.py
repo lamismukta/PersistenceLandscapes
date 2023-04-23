@@ -38,6 +38,7 @@ def interpolate(data,k):
 
 # Gudhi barcode from a point cloud
 # Formerly gd_barcode
+# Reference https://github.com/GUDHI/TDA-tutorial/blob/master/Tuto-GUDHI-persistence-diagrams.ipynb
 def gudhi_barcode(data, max_edge_length=15):
     skeleton = gd.RipsComplex(data, max_edge_length=max_edge_length)
     rips_simplex_tree = skeleton.create_simplex_tree(max_dimension = 3)
