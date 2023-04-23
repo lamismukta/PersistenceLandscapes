@@ -12,13 +12,17 @@ def get_data(pdbid,chain):
     data = g[0:,1:]
     return data
 
-# Plot ph diagram for a protein with ripser
-# Formerly rips_pd
-def ripser_persistence_diagram(pdbid,chain):
-    data = get_data(pdbid, chain)
+# Plot a ripser diagram from data
+def ripser_plot(data, title):
     rips = Rips(maxdim=2)
     diagrams = rips.fit_transform(data)
-    plot = rips.plot(diagrams, title = 'Persistence Diagram for {pdbid}_{chain}'.format(pdbid=pdbid,chain=chain))
+    rips.plot(diagrams, title = title)
+
+# Plot ph diagram for a protein with ripser
+# Formerly rips_pd
+def import_and_plot(pdbid,chain):
+    data = get_data(pdbid, chain)
+    plot = ripser_plot(data, title = 'Persistence Diagram for {pdbid}_{chain}'.format(pdbid=pdbid,chain=chain))
     return plot
 
 # Interpolate k points in a point cloud
