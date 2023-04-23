@@ -4,6 +4,7 @@ import math
 from scipy.interpolate import interp1d
 from scipy import integrate
 
+# Sorts the list to be increasing in first variable, then decreasing in the second variable
 def pl_sort(A):
     A = [(x[0],x[1]) for x in A]
     A.sort()
@@ -55,7 +56,7 @@ def persistence_landscape(barcode): #input: a list of 2-tuples. be careful if np
     return PL
 
 # formerly pl_plot
-def plot_pl(pl, xl = 2, xu = 12, yl = 0, yu = 4):
+def plot_pl(pl, xl = 2, xu = 12, yl = 0, yu = 4, title = ""):
     for item in pl:
         x = [i[0] for i in item]
         y = [i[1] for i in item]
@@ -63,6 +64,7 @@ def plot_pl(pl, xl = 2, xu = 12, yl = 0, yu = 4):
         plt.plot(x,y)
         plt.xlim(xl,xu)
         plt.ylim(yl,yu)
+        plt.title(title)
         plt.gca().set_aspect('equal', adjustable='box')
     plt.show()
 
