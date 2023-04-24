@@ -12,6 +12,12 @@ def get_data(pdbid,chain):
     data = g[0:,1:]
     return data
 
+# Ripser barcode from data
+def ripser_barcode(data):
+    rips = Rips(maxdim=2)
+    return rips.fit_transform(data)
+
+
 # Plot a ripser diagram from data
 def ripser_plot(data, title):
     rips = Rips(maxdim=2)
