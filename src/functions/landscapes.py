@@ -35,7 +35,6 @@ def persistence_landscape(barcode): #input: a list of 2-tuples. be careful if np
                     if a[j][1]>d:
                         (B,D) = a[j]
                         break
-                        break
                     else:
                         continue 
                 J = a.index((B,D)) 
@@ -49,7 +48,7 @@ def persistence_landscape(barcode): #input: a list of 2-tuples. be careful if np
                     L.append(((B+d)/2,(d-B)/2))
                     a.append((B,d))
                     a = pl_sort(a)
-                    p = a.index((B,d)) +1 #unsure whether this index is right 
+                    p = a.index((B,d)) +1 
                 L.append(((B+D)/2,(D-B)/2))
                 (b,d) = (B,D)
         PL.append(L)
@@ -214,9 +213,7 @@ def average_n(lst_pl):
     avg = [[(i[0],i[1]/n) for i in item] for item in sm]
     return avg
 
-def L_inf(p1,p2): #given two persistence landscapes returns a distance
-    a = p1
-    b = p2
+def L_inf(a,b): #given two persistence landscapes returns a distance
     n = min(len(a),len(b))
 
     X = common_x(a,b) #make list of points X union of x coords of critical pts in both 
@@ -238,14 +235,12 @@ def L_inf(p1,p2): #given two persistence landscapes returns a distance
     Y_a = [np.reshape(item,len(item)) for item in Y_a]
     Y_b = [np.reshape(item,len(item)) for item in Y_b]
     
-    Y_diff = [item1-item2 for item1,item2 in zip(Y_a,Y_b)] #this is a list of lists of scalars, their difference function NOT NECC A PL 
+    Y_diff = [item1-item2 for item1,item2 in zip(Y_a,Y_b)] #this is a list of lists of scalars, their difference function is not neccessrily a PL 
     norms = [[np.abs(i) for i in item] for item in Y_diff] 
     distance = max([max(i) for i in norms])
     return distance
 
-def Lp(pl1,pl2,p):
-    a=pl1
-    b=pl2
+def Lp(a,b,p):
     n = min(len(a),len(b))
     X = common_x(a,b)
     L_a = pl_to_function(a)
@@ -269,7 +264,6 @@ def Lp(pl1,pl2,p):
     for i in range(n):
         pair = list(zip(X[i],Y_diff_abs[i]))
         diff_pl.append(pair)
-    diff_func = pl_to_function(diff_pl) #turn it into a function (actually it is a list of functions) dont need this yet
     
     sum_int = 0
     for i in range(len(diff_pl)):
@@ -293,7 +287,7 @@ def lp_distance_matrix(pls,p):
 
 
 # formerly dm_linf
-def linf_diatance_matrix(pls):    
+def linf_distance_matrix(pls):    
     all_distances = np.zeros((len(pls), len(pls)))
     for i in range(0, len(pls)):
         for j in range(i, len(pls)):
